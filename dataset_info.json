@@ -1,0 +1,131 @@
+{
+    "database.csv": {
+        "shape": [
+            23412,
+            21
+        ],
+        "columns": [
+            "Date",
+            "Time",
+            "Latitude",
+            "Longitude",
+            "Type",
+            "Depth",
+            "Depth Error",
+            "Depth Seismic Stations",
+            "Magnitude",
+            "Magnitude Type",
+            "Magnitude Error",
+            "Magnitude Seismic Stations",
+            "Azimuthal Gap",
+            "Horizontal Distance",
+            "Horizontal Error",
+            "Root Mean Square",
+            "ID",
+            "Source",
+            "Location Source",
+            "Magnitude Source",
+            "Status"
+        ],
+        "target_candidates": [
+            "Magnitude",
+            "Magnitude Type",
+            "Magnitude Error",
+            "Magnitude Seismic Stations",
+            "Magnitude Source",
+            "Status"
+        ]
+    },
+    "forestfires.csv": {
+        "shape": [
+            517,
+            13
+        ],
+        "columns": [
+            "X",
+            "Y",
+            "month",
+            "day",
+            "FFMC",
+            "DMC",
+            "DC",
+            "ISI",
+            "temp",
+            "RH",
+            "wind",
+            "rain",
+            "area"
+        ],
+        "target_candidates": [
+            "area"
+        ]
+    },
+    "landslides.csv": {
+        "shape": [
+            1693,
+            23
+        ],
+        "columns": [
+            "id",
+            "date",
+            "time",
+            "continent_code",
+            "country_name",
+            "country_code",
+            "state/province",
+            "population",
+            "city/town",
+            "distance",
+            "location_description",
+            "latitude",
+            "longitude",
+            "geolocation",
+            "hazard_type",
+            "landslide_type",
+            "landslide_size",
+            "trigger",
+            "storm_name",
+            "injuries",
+            "fatalities",
+            "source_name",
+            "source_link"
+        ],
+        "target_candidates": [
+            "landslide_type",
+            "landslide_size"
+        ]
+    },
+    "tsunami_dataset.csv": {
+        "shape": [
+            2259,
+            21
+        ],
+        "columns": [
+            "ID",
+            "YEAR",
+            "MONTH",
+            "DAY",
+            "HOUR",
+            "MINUTE",
+            "LATITUDE",
+            "LONGITUDE",
+            "LOCATION_NAME",
+            "COUNTRY",
+            "REGION",
+            "CAUSE",
+            "EVENT_VALIDITY",
+            "EQ_MAGNITUDE",
+            "EQ_DEPTH",
+            "TS_INTENSITY",
+            "DAMAGE_TOTAL_DESCRIPTION",
+            "HOUSES_TOTAL_DESCRIPTION",
+            "DEATHS_TOTAL_DESCRIPTION",
+            "URL",
+            "COMMENTS"
+        ],
+        "target_candidates": [
+            "EQ_MAGNITUDE",
+            "DAMAGE_TOTAL_DESCRIPTION"
+        ]
+    }
+}

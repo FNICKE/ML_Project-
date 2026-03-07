@@ -1,52 +1,43 @@
-/**
- * API service to connect to the Flask Backend
- */
-
-const BASE_URL = 'http://127.0.0.1:5000';
+const API_BASE_URL = 'http://127.0.0.1:5000';
 
 export const checkHealth = async () => {
     try {
-        const response = await fetch(`${BASE_URL}/health`);
+        const response = await fetch(`${API_BASE_URL}/health`);
         return await response.json();
     } catch (error) {
-        console.error("Backend health check failed:", error);
-        return { status: "offline", model_ready: false };
+        console.error("Health check failed:", error);
+        return { status: 'offline', message: 'Could not connect to backend engine' };
     }
-}
+};
 
-export const getFeatures = async () => {
+export const getFeatures = async (disasterType = 'flood') => {
     try {
-        const response = await fetch(`${BASE_URL}/features`);
+        const response = await fetch(`${API_BASE_URL}/features/${disasterType}`);
         return await response.json();
     } catch (error) {
         console.error("Failed to fetch features:", error);
-        return { features: [] };
+        throw new Error("API Connection failed");
     }
-}
+};
 
-/**
- * Sends a prediction request using the named data format.
- * @param {Object} data - Dictionary of the 20 features
- */
-export const predictFlood = async (data) => {
+export const predictDisaster = async (disasterType, data) => {
     try {
-        const response = await fetch(`${BASE_URL}/predict`, {
+        const response = await fetch(`${API_BASE_URL}/predict/${disasterType}`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ data })
+            body: JSON.stringify({ data: data }),
         });
-        
-        const result = await response.json();
-        
+
         if (!response.ok) {
-            throw new Error(result.error || 'Failed to predict');
+            const errorData = await response.json();
+            throw new Error(errorData.error || `Server fault: ${response.status}`);
         }
-        
-        return result;
+
+        return await response.json();
     } catch (error) {
-        console.error("Prediction failed:", error);
-        throw error;
+        console.error("Prediction sequence failed:", error);
+        throw new Error(error.message === "Failed to fetch" ? "Network failure - backend offline." : error.message);
     }
-}
+};

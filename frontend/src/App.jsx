@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, CloudRain, Zap, Waves, Mountain, Flame, ShieldAlert, Activity, ArrowRight } from 'lucide-react';
+import { BrowserRouter, Routes, Route, Link, useLocation, Navigate, useNavigate } from 'react-router-dom';
+import { LayoutDashboard, CloudRain, Zap, Waves, Mountain, Flame, ShieldAlert, Activity, ArrowRight, LogOut } from 'lucide-react';
 import Flood from './pages/Flood';
 import Earthquake from './pages/Earthquake';
 import Tsunami from './pages/Tsunami';
 import Landslide from './pages/Landslide';
 import ForestFire from './pages/ForestFire';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import ProtectedRoute from './components/ProtectedRoute';
 
 const DISASTERS = [
     { path: '/flood',      label: 'Flood Risk',      icon: CloudRain, color: 'indigo', rgb: '96,165,250'  },
@@ -132,10 +135,17 @@ function Home() {
 
 function DashboardLayout() {
     const location = useLocation();
+    const navigate = useNavigate();
     const navItems = [
-        { path: '/', label: 'Overview', icon: LayoutDashboard, rgb: '99,102,241' },
+        { path: '/dashboard', label: 'Overview', icon: LayoutDashboard, rgb: '99,102,241' },
         ...DISASTERS
     ];
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('username');
+        navigate('/login');
+    };
 
     return (
         <div className="min-h-screen font-sans text-slate-200 flex overflow-hidden" style={{ background: '#080f1e' }}>
@@ -215,7 +225,7 @@ function DashboardLayout() {
 
                 {/* Footer */}
                 <div className="p-4" style={{ borderTop: '1px solid rgba(148,163,184,0.06)' }}>
-                    <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl" style={{ background: 'rgba(16,185,129,0.06)', border: '1px solid rgba(16,185,129,0.15)' }}>
+                    <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl mb-3" style={{ background: 'rgba(16,185,129,0.06)', border: '1px solid rgba(16,185,129,0.15)' }}>
                         <Activity className="w-3.5 h-3.5 text-emerald-500" />
                         <div>
                             <div className="text-xs font-bold text-emerald-400">All Systems Active</div>
@@ -223,6 +233,15 @@ function DashboardLayout() {
                         </div>
                         <div className="ml-auto w-2 h-2 rounded-full bg-emerald-400" style={{ boxShadow: '0 0 6px #10b981', animation: 'pulse 2s infinite' }} />
                     </div>
+
+                    <button 
+                        onClick={handleLogout}
+                        className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-400 hover:text-white hover:bg-slate-800/50 transition-all"
+                        style={{ border: '1px solid rgba(148,163,184,0.1)' }}
+                    >
+                        <LogOut className="w-4 h-4" />
+                        Sign Out
+                    </button>
                 </div>
             </aside>
 
@@ -233,12 +252,13 @@ function DashboardLayout() {
             >
                 <div className="max-w-7xl mx-auto px-6 lg:px-10 py-10">
                     <Routes>
-                        <Route path="/"          element={<Home />} />
+                        <Route path="/dashboard" element={<Home />} />
                         <Route path="/flood"     element={<Flood />} />
                         <Route path="/earthquake" element={<Earthquake />} />
                         <Route path="/tsunami"   element={<Tsunami />} />
                         <Route path="/landslide" element={<Landslide />} />
                         <Route path="/forestfire" element={<ForestFire />} />
+                        <Route path="/" element={<Navigate to="/dashboard" replace />} />
                     </Routes>
                 </div>
                 <style>{`
@@ -255,7 +275,15 @@ function DashboardLayout() {
 export default function App() {
     return (
         <BrowserRouter>
-            <DashboardLayout />
+            <Routes>
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/*" element={
+                    <ProtectedRoute>
+                        <DashboardLayout />
+                    </ProtectedRoute>
+                } />
+            </Routes>
         </BrowserRouter>
     );
 }

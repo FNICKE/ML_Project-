@@ -19,12 +19,20 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import pandas as pd
 from utils.preprocessing import _engineer_features, FEATURE_COLUMNS
+from auth import init_db, register_user, login_user
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 log = logging.getLogger(__name__)
 
 app = Flask(__name__)
 CORS(app)
+
+try:
+    init_db()
+    log.info("Initialized users database")
+except Exception as e:
+    log.error(f"Failed to initialize database: {e}")
+
 
 MODELS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "models"))
 
@@ -150,6 +158,30 @@ def predict(disaster="flood"):
     except Exception as e:
         log.exception("Unexpected error during prediction.")
         return jsonify({"error": str(e)}), 500
+
+@app.route("/api/register", methods=["POST"])
+def api_register():
+    payload = request.get_json(silent=True)
+    if not payload or not payload.get('username') or not payload.get('password'):
+        return jsonify({"error": "Username and password required"}), 400
+        
+    success, message = register_user(payload['username'], payload['password'])
+    if success:
+        return jsonify({"message": message}), 201
+    else:
+        return jsonify({"error": message}), 400
+
+@app.route("/api/login", methods=["POST"])
+def api_login():
+    payload = request.get_json(silent=True)
+    if not payload or not payload.get('username') or not payload.get('password'):
+        return jsonify({"error": "Username and password required"}), 400
+        
+    success, message, token = login_user(payload['username'], payload['password'])
+    if success:
+        return jsonify({"message": message, "token": token, "username": payload['username']}), 200
+    else:
+        return jsonify({"error": message}), 401
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
